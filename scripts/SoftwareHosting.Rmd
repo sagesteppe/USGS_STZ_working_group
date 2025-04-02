@@ -1,0 +1,79 @@
+---
+title: "Software Hosting"
+author: "steppe"
+date: "2025-3-30"
+output: html_document
+---
+
+  
+*Original prompt from C. Mengel. APRIL 2ND 2025*
+- Synthesis of information on all topics
+- help-line for tool users
+- documentation/guidance of existing tools
+- long-term hostings of tools
+- consolidation of tools and/or adding function to existing tools rather than build new
+  - Can we just do it instead of writing about it?
+- Process for moving research and tools produced into sustained operations
+  - like NOAA, NWS
+  - current processions (contracting with NGOS, counting on research scientists) have various pros and cons
++++++++++++++
+
+
+- Data bases: 
+  - SOS field collection 
+  - Tracking what farmers have what seed
+  - Restoration treatments
+  
+A plethora of tools and resources used by restoration practitioners, seed bank managers, and researchers have been developed to help guide native seed collection, help determine seed mixes, and to identify suitable seed sources for particular species for a restoration site.  
+Unfortunately, these resources are located in different locations across the internet, which can make accessing them cumbersome.  
+Additionally, while financial support is often available for the initial development of the software, few lines of funding appear to exist to support the resources online presence and to support continued software maintenance. 
+Here we compile a list of available tools, suggestions for new tools, and propose a set of processes to help host and maintain these resources. 
+
+[I figure here we make a table of existing tools: WWETAC, Climate Smart Seed Selection, CST, POPMAPS, etc.] - Maybe crowd source these!
+
+[Here we have another figure, with requested functionality, and WHEN POSSIBLE, state where this should go - lot's of things can fit in CSRT etc. so let's propose putting them there!]
+
+Hosting: 
+  - Organization such as Google offer services like Google Earth Engine which provide free compute 
+  - NGO servers can be endowed? - Opportunity to increase philanthropic funding from tech sector. 
+  
+Core Maintainer team: 
+  - Can be endowed if at NGO, even for sporadic work. 
+
+Development:
+   - Best Practices: 
+    - Tools like github workflows allow for testing compiling across various Operating systems
+    - Codefactor test that conventions are being used on a per language basis. 
+    - Code Coverage, unit testing
+    - Version Control, allowing comments with commits to certain functionality. 
+    - Using docker 
+
+  - Collaboration - while researchers have great understanding of the metholodogy, collaborators can help make it operate better
+    - organizations seek to match proficient developers with philanthropic causes, developforgood, donate:code, or even pro bono work from organizations such as BCG X or other tech companies with employees on benches etc. 
+    - 
+    
+Documentation: 
+   - Git websites, allow for reporting bugs directly (Github, Git Atlas etc...)
+   - Many websites allow for DOI for specific versions and stable software releases. 
+   - Github pages, READTHEDOCS, vignettes 
+   - software notes, citable, but require time and effort to write. 
+   - release notes (news) on feature changes 
+   
+Teaching: 
+  - Workshops 
+  - 1:1 support via email, better FAQ, chatbox. 
+  - 
+
+Citing the grey literature:
+  - More incentives required for academic collaborators, we need a tool for aggregating restoration plans and citing tools like CRST, otherwise their impact may be neglected!!!! 
+
+Maintenance: 
+  - Where the rubber hits the road
+    - Use GITHUB FOSS practices, allow for users to create branches and make changes
+    - again massive feature requests can be sent out to philanthropic organizations
+  - Maintainers can identify areas for feature development and work in congjunction with developers to achieve them (e.g. donate:code) or affiliation with academic organizations. 
+    
+Optimization new models
+  - Models which do not require causal inference can be developed using approaches such as Data Science Competitions e.g. ('DataDriven')
+  - UI/UX support from similar competitions (TopCoder)
+  - IronViz
