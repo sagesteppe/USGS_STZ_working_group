@@ -5,7 +5,7 @@ output: pdf_document
 ---
 
 The effects of climate on plants is mediated both directly and indirectly by landforms, and directly by soils, across a range of spatial scales (Giaccone et al. 2019, Moesland et al 2013, Swanson et al. 1988). 
-Landforms directly influence climate to produce micro-climates such as cold pools (e.g. in valleys) and micro-rain shadows (e.g. by mountains and ridges), resulting in variation in evapotranspiration and soil moisture availability gradients in even  (Pastore et al. 2022, Minder et al. 2008). 
+Landforms directly influence climate to produce micro-climates such as cold pools and micro-rain shadows, resulting in variation in evapotranspiration and soil moisture availability gradients in even  (Pastore et al. 2022, Minder et al. 2008). 
 Topographic slope and aspect control the amount of incipient solar radiation altering both soil temperatures and soil moisture, affecting both soil moisture and soil microbial composition and activity (Dearborn and Danby 2017). 
 Topographic features have also been shown to influence the amount of soil water availability, at various depths and across time, by altering the amount of overland, and subsurface, water flow leading to areas with either elevated or reduced amounts of water (McAuliffe 1994, Wondzell et al. 1996, Qui et al. 2001). 
 Soil water content has been shown to be influenced by the amount of coarse fragments in soil (Katra et al. 2008), as well as soil textural (English et al. 2005, Fernandez-Illescas et al. 2001, Singh et al. 1998), and chemical properties (e.g. carbonates, and soil organic carbon) (Duniway et al. 2010, Rawls et al. 2003). 
