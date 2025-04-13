@@ -23,7 +23,7 @@ output: html_document
   - SOS field collection 
   - Tracking what farmers have what seed
   - Restoration treatments
-  
+
 A plethora of tools and resources used by restoration practitioners, seed bank managers, and researchers have been developed to help guide native seed collection, help determine seed mixes, and to identify suitable seed sources for particular species for a restoration site.  
 Unfortunately, these resources are located in different locations across the internet, which can make accessing them cumbersome.  
 Additionally, while financial support is often available for the initial development of the software, few lines of funding appear to exist to support the resources online presence and to support continued software maintenance. 

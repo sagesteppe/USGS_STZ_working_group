@@ -1,0 +1,43 @@
+---
+title: "Select Seed Lots under Climate Change Scenarios"
+author: "Reed Benkendorf, Rob Massatti & Daniel Shyrock"
+output: html_document
+---
+
+## Ecological Niche Model
+
+An explosion in interest in mapping the ecological niche of species has resulted in a rich array of statistical approaches... 
+An ENM can be fit to current species distribution records (from sources such as BISON, or GBIF), and predicted onto gridded surfaces under both current and future climate scenarios (see **Ensemble Climate Models**).  
+Thresholding the probability surfaces allows for creating a binary mask which allows for restricting seed zones to areas which may support the species, and create more accurate estimates of realized seed zone sizes under current and future climate regimes.   
+
+## Filter ('Sieve') Areas
+
+Environmental filters can be effectively set by masking raster pixels into 0/1 conditions, whereby '0' or masked cells are removed from downstream analysis, and 1 pixels allow the inclusion of the pixel in downstream analyses. 
+
+*National Land Cover Dataset (NLCD)* An annually updated data set, in the conterminous US, which details broad land cover classes.
+NLCD can effectively be used to remove areas which have been converted to annual grass. 
+
+*Protected Areas of the US Database (PADUS)* is updated every few years, and can be used to restrict ranges of analysis to public lands, by administrative agency (e.g. State, Federal, NGO) or agency (e.g. BLM, Forest Service) and combinations thereof. 
+
+*Historic Seeding* Can be used to restrict seed collections from historically seeded areas. 
+
+## Ensemble Climate Models
+
+A variety of raster data sets exist which forecast future climate conditions under various CO~2~ relative concentration pathways (RCP). 
+Most of these also include current and historic climate conditions, and hence can be used for modelling genecological zones under at various time points. 
+While these data sets may not be as accurate as locally downscaled models (e.g. ClimateNA), they none the less provide results which may be useful for decision making. 
+
+Either a single one of these data sets can be used, which are generally based on an ensembling approach, or the seed zone model can be fit to various climate predictions and subsequently ensembled. 
+
+EXAMPLES: WorldClim, CHELSA, Noce et al. 2020 (a new global data set of bioclimatic indicators), 
+
+## Restricting analysis using MESS or Area of Applicability surfaces
+
+The shifting of species ranges into new environmental and geographic space may concern modellers in that they may result in model extrapolation. 
+Recent geospatial approaches such as multivariate environmental surfaces (MESS) and spatial cross validation can allow for masking these areas from decision making to reduce the adverse effects of extrapolation. 
+
+## Metrics for targeting native plant materials development 
+
+Under our proposed approach numerous metrics could be used by native seed development personnel to prioritize projects. 
+For example, the total area covered by a seed zone, statistical metrics of dispersion for resilience of seed zones (e.g. mean or median resilience values of each seed zone), the difference in size between current and forecast seed zones (e.g. zones may expand or contract under scenarios). 
+Within zones, areas can be targeted for native seed collection and development which minimize the geographic distance between current and predict seed zones, or environmental similarity between areas currently within a seed zone and projected to be within a seed zone.   
