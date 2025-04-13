@@ -36,6 +36,37 @@ ggplot() +
   geom_sf(data = sz_forecast$enm, aes(fill = Poly))
 ```
 
+```{r Create filter}
+
+filt <- st_polygon( 
+    list(
+      rbind(
+        c(43, 1), c(57, 15), # bottom portion right
+        c(57, 60), # stem portion right
+        c(85, 100), c(15, 100), # very top of filter
+        c(43, 60), # stem portion left
+        c(43, 1)  # bottom portion left
+      )
+    )
+  )  %>% 
+  st_geometry()  %>% 
+  st_as_sf(crs = 26913) %>% 
+  mutate(Attribute = 'Filter') %>% 
+  rename('geometry' = x) %>% 
+  st_as_sf()
+
+filt <- ggplot() + 
+  geom_sf(data = filt) + 
+  theme_minimal() +
+  scale_y_continuous(breaks=c(0), labels = '        ') +
+  scale_x_continuous(breaks = NULL) + 
+  theme(
+    aspect.ratio = 1, 
+    panel.grid.major = element_blank(),
+    axis.text.x = element_blank())
+
+```
+
 ```{r Create plots}
 
 sz_c <- ggplot(sz_current$SZ, aes(fill = Poly)) +
@@ -65,12 +96,14 @@ enm_f <- ggplot(sz_forecast$enm, aes(fill = Poly)) +
 
 rl_sz <- wrap_elements(panel = textGrob('Seed Zones', rot=90))
 rl_enm <- wrap_elements(panel = textGrob('Ecological\nNiche Model', rot=90))
+rl_filt <- wrap_elements(panel = textGrob('Filter', rot=90))
 
 (rl_sz | sz_c | sz_f) / 
   (rl_enm | enm_c| enm_f) +
-          plot_layout(widths = c(0.05,1,1), guides='collect')
+    (rl_filt | filt | filt) + 
+          plot_layout(widths = c(0.1,1,1), guides='collect')
 
-sz_c + sz_f + enm_c + enm_f
+
 ```
 
 
