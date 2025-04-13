@@ -7,50 +7,72 @@ output: html_document
 
 ```{r}
 library(sf)
-library(rmapshaper)
+library(tidyverse)
+library(smoothr)
+library(patchwork)
+library(grid)
+source('functions.R')
 ```
 
 ```{r read in polygons}
 sz_current <- st_read('../data/CurrentZones.gpkg', quiet = T) |>
-  sf::st_transform(5070)
+  sf::st_transform(5070) |>
+  rename(Poly = ID)
 sz_forecast <- st_read('../data/ClimateShiftedZones.gpkg', quiet = T) |>
-  mutate(ID = c('Western', 'East', 'Central', 'Northern'))|>
-  sf::st_transform(5070)
+  mutate(Poly = c('Western', 'East', 'Northern', 'Central'))|> # silly with the gui
+  sf::st_transform(5070) # just set names here. 
 ```
 
-```{r}
 
-# smooth the hard vertices from hand drawn polygons
-sz_forecast <- st_buffer(sz_forecast, 5000)
-sz_current <- st_buffer(sz_current, 5000)
+```{r prepare data sets }
 
-# now sample points across the domain, classify as closest polygon. 
-# these will be the surfaces for the Seed Zones in both current and forecast time
+map_bb <- st_bbox( bind_rows(sz_current, sz_forecast))
 
-pts <- st_sample(
-  st_bbox(
-    st_union(sz_forecast, sz_current)
-    ),
-  5000
-  ) |>
-  st_as_sf()
-
-pts_current <- bind_cols(
-  Poly = sz_current$ID[sf::st_nearest_feature(pts, sz_current)],
-  geom = pts
-  ) |> st_as_sf()
+sz_current <- prep_dat(sz_current)
+sz_forecast <- prep_dat(sz_forecast)
 
 ggplot() + 
-  geom_sf(data = pts_current, aes(color = Poly))
-
-# now combine the polygons to make binary threshold SDM surfaces. 
-
-# 
-
-ggplot() + 
-  geom_sf(data = sz_forecast, fill = NA, color = 'red')  + 
-  geom_sf(data = sz_current, fill = NA)
+  geom_sf(data = sz_current$enm, aes(fill = Poly)) + 
+  geom_sf(data = sz_forecast$enm, aes(fill = Poly))
 ```
+
+```{r Create plots}
+
+sz_c <- ggplot(sz_current$SZ, aes(fill = Poly)) +
+  geom_sf() + 
+  coord_sf(xlim = map_bb[c(1,3)], ylim = map_bb[c(2,4)]) + 
+  scale_x_continuous(breaks=c(-106, -109, -112)) + 
+  theme_minimal() 
+
+sz_f <- ggplot(sz_forecast$SZ, aes(fill = Poly)) +
+  geom_sf() + 
+  coord_sf(xlim = map_bb[c(1,3)], ylim = map_bb[c(2,4)]) + 
+  scale_x_continuous(breaks=c(-106, -109, -112)) + 
+  theme_minimal() 
+
+enm_c <- ggplot(sz_current$enm, aes(fill = Poly)) +
+  geom_sf() + 
+  coord_sf(xlim = map_bb[c(1,3)], ylim = map_bb[c(2,4)]) + 
+  scale_x_continuous(breaks=c(-106, -109, -112)) + 
+  theme_minimal() 
+
+enm_f <- ggplot(sz_forecast$enm, aes(fill = Poly)) +
+  geom_sf() + 
+  coord_sf(xlim = map_bb[c(1,3)], ylim = map_bb[c(2,4)]) + 
+  scale_x_continuous(breaks=c(-106, -109, -112)) + 
+  theme_minimal() 
+
+
+rl_sz <- wrap_elements(panel = textGrob('Seed Zones', rot=90))
+rl_enm <- wrap_elements(panel = textGrob('Ecological\nNiche Model', rot=90))
+
+(rl_sz | sz_c | sz_f) / 
+  (rl_enm | enm_c| enm_f) +
+          plot_layout(widths = c(0.05,1,1), guides='collect')
+
+sz_c + sz_f + enm_c + enm_f
+```
+
 
 ## Ecological Niche Model
 
