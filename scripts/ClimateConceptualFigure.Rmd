@@ -4,6 +4,54 @@ author: "Reed Benkendorf, Rob Massatti & Daniel Shyrock"
 output: html_document
 ---
 
+
+```{r}
+library(sf)
+library(rmapshaper)
+```
+
+```{r read in polygons}
+sz_current <- st_read('../data/CurrentZones.gpkg', quiet = T) |>
+  sf::st_transform(5070)
+sz_forecast <- st_read('../data/ClimateShiftedZones.gpkg', quiet = T) |>
+  mutate(ID = c('Western', 'East', 'Central', 'Northern'))|>
+  sf::st_transform(5070)
+```
+
+```{r}
+
+# smooth the hard vertices from hand drawn polygons
+sz_forecast <- st_buffer(sz_forecast, 5000)
+sz_current <- st_buffer(sz_current, 5000)
+
+# now sample points across the domain, classify as closest polygon. 
+# these will be the surfaces for the Seed Zones in both current and forecast time
+
+pts <- st_sample(
+  st_bbox(
+    st_union(sz_forecast, sz_current)
+    ),
+  5000
+  ) |>
+  st_as_sf()
+
+pts_current <- bind_cols(
+  Poly = sz_current$ID[sf::st_nearest_feature(pts, sz_current)],
+  geom = pts
+  ) |> st_as_sf()
+
+ggplot() + 
+  geom_sf(data = pts_current, aes(color = Poly))
+
+# now combine the polygons to make binary threshold SDM surfaces. 
+
+# 
+
+ggplot() + 
+  geom_sf(data = sz_forecast, fill = NA, color = 'red')  + 
+  geom_sf(data = sz_current, fill = NA)
+```
+
 ## Ecological Niche Model
 
 An explosion in interest in mapping the ecological niche of species has resulted in a rich array of statistical approaches... 
