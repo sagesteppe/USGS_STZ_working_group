@@ -136,8 +136,9 @@ EXAMPLES: WorldClim, CHELSA, Noce et al. 2020 (a new global data set of bioclima
 
 ## Restricting analysis using MESS or Area of Applicability surfaces
 
-The shifting of species ranges into new environmental and geographic space may concern modellers in that they may result in model extrapolation. 
-Recent geospatial approaches such as multivariate environmental surfaces (MESS) and spatial cross validation can allow for masking these areas from decision making to reduce the adverse effects of extrapolation. 
+Complications with interpreting ecological niche models (ENMs) in climate shifted space, where novel combinations of climate variables may generate feature spaces training data were not sampled from, have fostered approaches for detecting spatial extrapolation in geostatistical models developed from sparse data sets as is common in ecology. 
+These methods seek to identify areas in feature space and map them to geographic space (pixels) on raster surfaces where the predictive ability of models are likely to deteriorate relative to the globally acquired performance metrics (e.g. RMSE, MAE, AUC-ROC), and under which the model should be used, at best, extra cautiously for decision making. 
+These approaches are now considered best practice for ENM modelling and the many alternatives should be investigated for incorporation to seed zone development modelling. 
 
 ## Metrics for targeting native plant materials development 
 
