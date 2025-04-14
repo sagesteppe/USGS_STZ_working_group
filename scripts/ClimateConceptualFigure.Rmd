@@ -5,7 +5,7 @@ output: html_document
 ---
 
 
-```{r}
+```{r echo = F, message = F}
 library(sf)
 library(tidyverse)
 library(smoothr)
@@ -126,19 +126,17 @@ NLCD can effectively be used to remove areas which have been converted to annual
 
 ## Ensemble Climate Models
 
-A variety of raster data sets exist which forecast future climate conditions under various CO~2~ relative concentration pathways (RCP). 
-Most of these also include current and historic climate conditions, and hence can be used for modelling genecological zones under at various time points. 
-While these data sets may not be as accurate as locally downscaled models (e.g. ClimateNA), they none the less provide results which may be useful for decision making. 
+A variety of raster data sets exist, which interpolate current climate patterns, and forecast future climate conditions under various CO~2~ relative concentration pathways (RCP) or shared socioeconomic pathways (SSPs) (see Noce et. al 2020). 
+Three data sets, which may be of interest, use downscaling approaches to generate high resolution surfaces, (WorldClim 2.0, CHELSA, and climateNA), and two of these data sets, ClimateNA (to ~30m resolution) and CHELSA (~ 1 km resolution), offer already computed bioclim variables for a range of time periods for download (Brun et al. 2022, Fick & Hijman 2017, Mahony et al. 2022, Wang et al. 2016). 
 
-Either a single one of these data sets can be used, which are generally based on an ensembling approach, or the seed zone model can be fit to various climate predictions and subsequently ensembled. 
-
-EXAMPLES: WorldClim, CHELSA, Noce et al. 2020 (a new global data set of bioclimatic indicators), 
+Models of seed zones can be fit under both current conditions, and at the time points offered by the above models. 
+For users unsure of which data products to use, i.e. which global climate model for a set of SSPs or RCPs, the same statistical model can be fit to a variety of forecasts and a weighted mean (based on an evaluation metric, e.g. r^2^) and the predictions ensembled to create a single prediction, as well as estimates of uncertainty (see Dormann et al. 2018). 
 
 ## Restricting analysis using MESS or Area of Applicability surfaces
 
-Complications with interpreting ecological niche models (ENMs) in climate shifted space, where novel combinations of climate variables may generate feature spaces training data were not sampled from, have fostered approaches for detecting spatial extrapolation in geostatistical models developed from sparse data sets as is common in ecology. 
-These methods seek to identify areas in feature space and map them to geographic space (pixels) on raster surfaces where the predictive ability of models are likely to deteriorate relative to the globally acquired performance metrics (e.g. RMSE, MAE, AUC-ROC), and under which the model should be used, at best, extra cautiously for decision making. 
-These approaches are now considered best practice for ENM modelling and the many alternatives should be investigated for incorporation to seed zone development modelling. 
+Complications with interpreting ecological niche models (ENMs) in climate shifted space, where novel combinations of climate variables may generate feature spaces training data were not sampled from, have fostered approaches for detecting spatial extrapolation in geostatistical models developed from sparse data sets as is common in ecology (Elith et al. 2010, Owens et al. 2013). 
+These methods seek to identify areas in feature space and map them to geographic space (pixels) on raster surfaces where the predictive ability of models are likely to deteriorate relative to the globally acquired performance metrics (e.g. RMSE, MAE, AUC-ROC), and under which the model should be used, at best, extra cautiously for decision making (Conn et. al 2015, de Bruin et al. 2022, Velazco et al. 2023, Wang et al. 2023). 
+These approaches are now considered best practice for ENM modelling and the many alternatives should be investigated for incorporation to seed zone development modelling, although notably most of the recent developments pertain to machine learning approaches, and niche modelling applications.
 
 ## Metrics for targeting native plant materials development 
 
