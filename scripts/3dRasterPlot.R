@@ -115,3 +115,9 @@ r_plot <- ggplot() +
   
 ggsave('../poster/Rasters.png', r_plot, bg = 'transparent', 
        dpi = 300, units = 'in', height = 5, width = 3.5)
+
+
+
+
+################################################################################
+# now we prepare another data set to exemplify ensembling a model 

@@ -4,6 +4,11 @@ author: "Reed Benkendorf, Rob Massatti & Daniel Shyrock"
 output: html_document
 ---
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  comment = "", echo = FALSE, message = F, warning = F
+)
+```
 
 ```{r echo = F, message = F}
 library(sf)
@@ -23,7 +28,6 @@ sz_forecast <- st_read('../data/ClimateShiftedZones.gpkg', quiet = T) |>
   sf::st_transform(5070) # just set names here. 
 ```
 
-
 ```{r prepare data sets }
 
 map_bb <- st_bbox( bind_rows(sz_current, sz_forecast))
@@ -31,9 +35,20 @@ map_bb <- st_bbox( bind_rows(sz_current, sz_forecast))
 sz_current <- prep_dat(sz_current)
 sz_forecast <- prep_dat(sz_forecast)
 
-ggplot() + 
-  geom_sf(data = sz_current$enm, aes(fill = Poly)) + 
-  geom_sf(data = sz_forecast$enm, aes(fill = Poly))
+# now we will generate some cavities in these surfaces to visualize the results of filtering. 
+pts <- st_sample(sz_current$enm, size = 10) 
+
+dists <- sample(1e4:5e4, size = 10)
+pts <- Map(st_buffer, pts, dist = dists)
+
+pts <- st_combine(do.call("c", pts)) |>
+  st_as_sf(crs = 5070) |>
+  st_make_valid()
+
+cheese_current <- st_difference(sz_current$enm, pts)
+
+ggplot(cheese_current) + 
+  geom_sf()
 ```
 
 ```{r Create filter}
@@ -109,13 +124,19 @@ rl_filt <- wrap_elements(panel = textGrob('Filter', rot=90))
 
 ## Ecological Niche Model
 
-An explosion in interest in mapping the ecological niche of species has resulted in a rich array of statistical approaches... 
-An ENM can be fit to current species distribution records (from sources such as BISON, or GBIF), and predicted onto gridded surfaces under both current and future climate scenarios (see **Ensemble Climate Models**).  
-Thresholding the probability surfaces allows for creating a binary mask which allows for restricting seed zones to areas which may support the species, and create more accurate estimates of realized seed zone sizes under current and future climate regimes.   
+An array of statistical approaches and guidance have been developed which treat the (generally binary) occurrence of a species as a function of environmental variables to create ecological niche models (Elith & Leathwick 2010). 
+An ENM can be fit to current species distribution records (from sources such as BISON, or GBIF), and predicted onto gridded surfaces under both current and future climate scenarios (see **Forecasting seed zones with climate models**), although these forecasts come with a range of assumptions (Dormann 2007, Araújo et al. 2005). 
+Thresholding the probability surfaces allows for creating a binary mask which allows for restricting seed zones to areas which may support the species (Liu et al. 2005), and create more accurate estimates of realized seed zone sizes under current and future climate regimes. 
+While this practice should be easily implementable for models under current conditions, which are often already limited to areas within the samples used for common garden (Johnson et al. 2017), although some modifications for clipping seed zones to forecast ranges, such as mechanistic based modelling, may need to be utilized (Urban et al. 2016). s
 
 ## Filter ('Sieve') Areas
 
-Environmental filters can be effectively set by masking raster pixels into 0/1 conditions, whereby '0' or masked cells are removed from downstream analysis, and 1 pixels allow the inclusion of the pixel in downstream analyses. 
+Not all areas across the portions of seed zones may be used for seed collection, or restoration. 
+For example, certain areas may have undergone transitions into an annual grassland states, prohibiting the possibilities for both seed development or effective restoration with our current skills.  
+During the future time period plant materials are unlikely to be able to self-migrate to projected suitable habitat, hence these areas will only ever be sinks for developed plant materials, unless it becomes accepted practice to collect seed from seeded populations. 
+In our simple conceptual figure, which can be considered as seeking to determine the seed needed per zone, 
+
+Environmental filters can be effectively set by masking raster pixels into 0/1 conditions, whereby 0 or masked cells are removed from downstream analysis, and 1 pixels allow the inclusion of the pixel in downstream analyses. 
 
 *National Land Cover Dataset (NLCD)* An annually updated data set, in the conterminous US, which details broad land cover classes.
 NLCD can effectively be used to remove areas which have been converted to annual grass. 
@@ -124,15 +145,16 @@ NLCD can effectively be used to remove areas which have been converted to annual
 
 *Historic Seeding* Can be used to restrict seed collections from historically seeded areas. 
 
-## Ensemble Climate Models
+## Forecasting seed zones with climate models 
 
 A variety of raster data sets exist, which interpolate current climate patterns, and forecast future climate conditions under various CO~2~ relative concentration pathways (RCP) or shared socioeconomic pathways (SSPs) (see Noce et. al 2020). 
-Three data sets, which may be of interest, use downscaling approaches to generate high resolution surfaces, (WorldClim 2.0, CHELSA, and climateNA), and two of these data sets, ClimateNA (to ~30m resolution) and CHELSA (~ 1 km resolution), offer already computed bioclim variables for a range of time periods for download (Brun et al. 2022, Fick & Hijman 2017, Mahony et al. 2022, Wang et al. 2016). 
+Three data sets, which may be of interest, use downscaling approaches to generate high resolution surfaces (WorldClim 2.0, CHELSA, and climateNA) and two of these data sets, ClimateNA (to ~30m resolution) and CHELSA (~ 1 km resolution), offer bioclim variables for a range of time periods for download (Brun et al. 2022, Fick & Hijman 2017, Mahony et al. 2022, Wang et al. 2016). 
+Notably climateNA is the data product used by the Climate Smart & Seed Lot selection tools and models fit using these data sets should offer the maximum benefits for determining the most suitable origin locations for specific restoration projects (St. Clair et al. 2022). 
 
 Models of seed zones can be fit under both current conditions, and at the time points offered by the above models. 
-For users unsure of which data products to use, i.e. which global climate model for a set of SSPs or RCPs, the same statistical model can be fit to a variety of forecasts and a weighted mean (based on an evaluation metric, e.g. r^2^) and the predictions ensembled to create a single prediction, as well as estimates of uncertainty (see Dormann et al. 2018). 
+For users unsure of which data products to use, i.e. which global climate model for a set of SSPs or RCPs, the same statistical model can be fit to a variety of forecasts and the mean (or in certain contexts the mode) and the predictions ensembled to create a single prediction, as well as estimates of uncertainty (see Dormann et al. 2018). 
 
-## Restricting analysis using MESS or Area of Applicability surfaces
+## Preventing model extrapolation  
 
 Complications with interpreting ecological niche models (ENMs) in climate shifted space, where novel combinations of climate variables may generate feature spaces training data were not sampled from, have fostered approaches for detecting spatial extrapolation in geostatistical models developed from sparse data sets as is common in ecology (Elith et al. 2010, Owens et al. 2013). 
 These methods seek to identify areas in feature space and map them to geographic space (pixels) on raster surfaces where the predictive ability of models are likely to deteriorate relative to the globally acquired performance metrics (e.g. RMSE, MAE, AUC-ROC), and under which the model should be used, at best, extra cautiously for decision making (Conn et. al 2015, de Bruin et al. 2022, Velazco et al. 2023, Wang et al. 2023). 
@@ -140,6 +162,23 @@ These approaches are now considered best practice for ENM modelling and the many
 
 ## Metrics for targeting native plant materials development 
 
-Under our proposed approach numerous metrics could be used by native seed development personnel to prioritize projects. 
+Under our approach numerous metrics could be used by native seed development personnel to prioritize projects. 
 For example, the total area covered by a seed zone, statistical metrics of dispersion for resilience of seed zones (e.g. mean or median resilience values of each seed zone), the difference in size between current and forecast seed zones (e.g. zones may expand or contract under scenarios). 
-Within zones, areas can be targeted for native seed collection and development which minimize the geographic distance between current and predict seed zones, or environmental similarity between areas currently within a seed zone and projected to be within a seed zone.   
+Within zones, areas can be targeted for native seed collection and development which minimize the geographic distance between current and predict seed zones, or environmental similarity between areas currently within a seed zone and projected to be within a seed zone.  
+
+Seed Zone t~0~ (Area)  
+Seed Zone t~1~ (Area)  
+Seed Zone Pct. Change (Area) t~0~ -> t~1~  
+
+Seed Zone Remnant Areas t~0~ (Area)  
+Seed Zone Remnant Areas t~1~ (Area)  
+Seed Zone Remnant Areas Pct. Change (Area) t~0~ -> t~1~s  
+
+Mean (or Median) Seed Zone Resilience t~0~  
+Mean (or Median) Seed Zone Resilience t~1~  
+Mean (or Median) Seed Zone Pct. Change Resilience t~0~ -> t~1~  
+ 
+Mean (or Median) Seed Zone Resilience (excluding converted areas) t~0~  
+Mean (or Median) Seed Zone Resilience (excluding converted areas) t~1~  
+Mean (or Median) Seed Zone Pct. Change Resilience (excluding converted areas) t~0~ -> t~1~  
+
