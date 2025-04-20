@@ -78,3 +78,14 @@ rm(r_plot, sf_lyrs)
 
 ################################################################################
 #    now we prepare another data set to exemplify ensembling a model 
+
+# use 49 data sets. 
+
+dat <- matrix(nrow = 7, ncol = 7)
+
+dat[,1:3] <- 1
+dat[1:2,4:7] <- 2
+dat[3:4,4:7] <- 3
+dat[5:7,4:7] <- 4
+
+dat
