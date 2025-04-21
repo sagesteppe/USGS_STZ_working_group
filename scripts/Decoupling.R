@@ -6,6 +6,7 @@ library(terra)
 library(gstat)
 library(ggpattern)
 library(ggnewscale)
+library(ggarrow)
 set.seed(27)
 setwd('~/Documents/assoRted/USGS_STZ_working_group/scripts')
 source('functions.R')
@@ -123,24 +124,24 @@ rm(h_lines, v45_lines, v135_lines)
 mesic_grp <- data.frame(
   Group = 'Mesic',
   Status = c(rep('Core', 8), 'Decoupled'),
-  x = c(sample(42:52, 8), 60), 
-  y = c(sample(65:75, 8), 60)
+  x = c(sample(45:50, 8, replace = TRUE), 62), 
+  y = c(sample(63:70, 8), 58)
 ) |>
   st_as_sf(coords = c('x', 'y'))
 
 dry_grp <- data.frame(
   Group = 'Dry',
   Status = c(rep('Core', 8), 'Decoupled'),
-  x = c(sample(35:45, 8), 24), 
-  y = c(sample(20:30, 8), 37)
+  x = c(sample(33:42, 8), 22), 
+  y = c(sample(18:28, 8), 25)
   ) |>
   st_as_sf(coords = c('x', 'y'))
 
 med_grp <- data.frame(
   Group = 'Med',
   Status = c(rep('Core', 8), 'Decoupled', 'Decoupled'),
-  x = c(sample(50:60, 8), 65, 45), 
-  y = c(sample(35:45, 8), 30, 50)
+  x = c(sample(50:60, 8), 77, 33), 
+  y = c(sample(30:40, 8), 23, 48)
 ) |>
   st_as_sf(coords = c('x', 'y'))
 
@@ -159,12 +160,40 @@ decoupled <- bind_rows(dry_ell$diff, med_ell$diff, mes_ell$diff) |>
   mutate(Group = c('Dry', 'Med', 'Mesic'))
 
 
-# Group colors
-#17183B # very dark blue
-#A40E4C # dark red 
-#39A2AE # middle group
-values = c("Dry" = "#A40E4C", "Med" = "#39A2AE", "Mesic" = "#17183B")
+values = c("Dry" = "#A40E4C", "Med" = "#B5C2B7", "Mesic" = "#124E78")
 shapes = c('Core' = 21, 'Decoupled' = 23)
+labs <- c('Driest', 'Intermediate', 'Wettest')
+
+Wettest_label <- c("The wettest group's decoupled pop. has more\n soil moisture available. Resulting in a\n lower range of precip and temp.")
+Intermediate_label <- c('The intermediate group has two decoupled\npops. Increasing the predicted range of\ntemp and precip in both directions.')
+Driest_label <- c('The driest group has less\n soil moisture available\n and extends to areas\nwith higher precip')
+
+wet_lab_bg <- data.frame(
+  x = c(-8, 43, 35, -1, -8), 
+  y = c(85, 85, 75, 75, 85)
+) |>
+  st_as_sf(coords = c('x', 'y')) |>
+  st_union() |>
+  st_convex_hull() |>
+  st_buffer(1)
+
+int_lab_bg <- data.frame(
+  x = c(66, 112, 106, 71, 66), 
+  y = c(71,  71,  62, 62, 71)
+)|>
+  st_as_sf(coords = c('x', 'y')) |>
+  st_union() |>
+  st_convex_hull() |>
+  st_buffer(1)
+
+dri_lab_bg <- data.frame(
+  x = c(-15, 12, 8, -11, -15), 
+  y = c(46, 46, 34, 34, 46)
+)|>
+  st_as_sf(coords = c('x', 'y')) |>
+  st_union() |>
+  st_convex_hull() |>
+  st_buffer(1)
 
 ggplot() + 
   
@@ -185,34 +214,50 @@ ggplot() +
   
   ############ finally we start to add data to the plot.  ##################
   
-
   # these are the core CCA areas, without the influence of a decoupled population
-  geom_sf(data = core, aes(color = Group, fill = Group), lwd = 1.1, alpha = 0.2 ) +
+  geom_sf(data = core, aes(color = Group, fill = Group), lwd = 1.1, alpha = 0.3) +
   
   # add the areas where the climate is decoupled within a morphotype 
   # based seed zone
-  geom_sf(data = decoupled, aes(color = Group), lwd = 1.1, fill = NA) + 
+  geom_sf(data = decoupled, aes(color = Group), lwd = 1.1, fill = NA, lty = 1) + 
   
   # these are the points representing morphos from a CCA
   geom_sf(data = morphos, aes(shape = Status, fill = Group), size = 3) + 
   scale_shape_manual(values = shapes)  + 
-  scale_fill_manual(values = values, labels = c('Driest', 'Intermediate', 'Wettest')) + 
-  scale_color_manual(values = values, labels = c('Driest', 'Intermediate', 'Wettest')) + 
+  
+  scale_fill_manual(
+    values = values, 
+    labels = labs
+    ) + 
+  scale_color_manual(
+    values = values, 
+    labels = labs
+    ) + 
   
   # labels for easy orientation 
   geom_label(aes(x = 20, y = 45, label='Temperature'), size = 5, angle = 60) + 
-  geom_text(aes(x = 5, y = 15, label='warmer'), angle = 60) + 
-  geom_text(aes(x = 40, y = 75, label='cooler'), angle = 60) + 
+  geom_text(aes(x = 8, y = 20, label='warmer'), angle = 60) + 
+  geom_text(aes(x = 36, y = 68, label='cooler'), angle = 60) + 
   
   geom_label(aes(x = 80, y = 45, label='Precipitation'),  size = 5, angle = 300) + 
-  geom_text(aes(x = 60, y = 75, label='more'), angle = 300) + 
-  geom_text(aes(x = 95, y = 15, label='less'), angle = 300) +  
+  geom_text(aes(x = 64, y = 68, label='more'), angle = 300) + 
+  geom_text(aes(x = 92, y = 20, label='less'), angle = 300) +  
   
   geom_label(aes(x = 50, y = -5, label='Geomorphology'), size = 5,) + 
-  geom_text(aes(x = 15, y = -3, label='drier')) + 
-  geom_text(aes(x = 85, y = -3, label='wetter')) + 
-  
-  theme(aspect.ratio = 1) + 
-  theme_void()
+  geom_text(aes(x = 23, y = -3, label='drier')) + 
+  geom_text(aes(x = 78, y = -3, label='wetter')) + 
 
+  # backdrop ellipses for the text boxes. 
+  geom_sf(data = wet_lab_bg, fill = '#124E78', alpha = 0.4, color = '#124E78', lwd = 1.1) + 
+  geom_sf(data = int_lab_bg, fill = '#B5C2B7', alpha = 0.4, color = '#B5C2B7', lwd = 1.1) + 
+  geom_sf(data = dri_lab_bg, fill = '#A40E4C', alpha = 0.4, color = '#A40E4C', lwd = 1.1) + 
+  
+  # text boxes explaining the groups
+  geom_text(aes(x = 17, y = 80, label = Wettest_label), size = 3) + 
+  geom_text(aes(x = 89, y = 67, label = Intermediate_label), size = 3) + 
+  geom_text(aes(x = -2, y = 40, label = Driest_label), size = 3) + 
+  
+  theme_void() + 
+  xlim(-15, 115) + 
+  theme( legend.position = 'bottom') 
 
