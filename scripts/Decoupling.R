@@ -164,12 +164,12 @@ values = c("Dry" = "#A40E4C", "Med" = "#B5C2B7", "Mesic" = "#124E78")
 shapes = c('Core' = 21, 'Decoupled' = 23)
 labs <- c('Driest', 'Intermediate', 'Wettest')
 
-Wettest_label <- c("The wettest group's decoupled pop. has more\n soil moisture available. Resulting in a\n lower range of precip and temp.")
-Intermediate_label <- c('The intermediate group has two decoupled\npops. Increasing the predicted range of\ntemp and precip in both directions.')
+Wettest_label <- c("The wettest group's decoupled pop. has more\n soil moisture available; resulting in a\n lower range of precip and temp.")
+Intermediate_label <- c('The intermediate group has two decoupled\npops; increasing the predicted range of\ntemp and precip in both directions.')
 Driest_label <- c('The driest group has less\n soil moisture available\n and extends to areas\nwith higher precip')
 
 wet_lab_bg <- data.frame(
-  x = c(-8, 43, 35, -1, -8), 
+  x = c(-14, 36, 30, -8, -14), 
   y = c(85, 85, 75, 75, 85)
 ) |>
   st_as_sf(coords = c('x', 'y')) |>
@@ -178,8 +178,8 @@ wet_lab_bg <- data.frame(
   st_buffer(1)
 
 int_lab_bg <- data.frame(
-  x = c(66, 112, 106, 71, 66), 
-  y = c(71,  71,  62, 62, 71)
+  x = c(66, 113, 108, 71, 66), 
+  y = c(75,  75,  65, 65, 75)
 )|>
   st_as_sf(coords = c('x', 'y')) |>
   st_union() |>
@@ -187,13 +187,14 @@ int_lab_bg <- data.frame(
   st_buffer(1)
 
 dri_lab_bg <- data.frame(
-  x = c(-15, 12, 8, -11, -15), 
-  y = c(46, 46, 34, 34, 46)
+  x = c(-4.5, 25, 17.5, 3.5, -4.5), 
+  y = c(66, 66, 53, 53, 66)
 )|>
   st_as_sf(coords = c('x', 'y')) |>
   st_union() |>
   st_convex_hull() |>
   st_buffer(1)
+
 
 ggplot() + 
   
@@ -204,7 +205,7 @@ ggplot() +
   new_scale_fill() +
 
   # now we add the grid lines across it, in the style of a USDA soil triangle
-  geom_sf(data = lines, color = 'grey95') + 
+  geom_sf(data = lines, color = '#FFFFF0') + 
   
   # we add the border on top of the gridlines, because the edges are confluent
   # with our border and will draw over it, and that looks bad
@@ -223,27 +224,29 @@ ggplot() +
   
   # these are the points representing morphos from a CCA
   geom_sf(data = morphos, aes(shape = Status, fill = Group), size = 3) + 
-  scale_shape_manual(values = shapes)  + 
+  scale_shape_manual(values = shapes, name = "Population:")  + 
   
   scale_fill_manual(
     values = values, 
-    labels = labs
+    labels = labs,
+    name = 'STZ Group'
     ) + 
   scale_color_manual(
     values = values, 
-    labels = labs
+    labels = labs,
+    name = 'STZ Group'
     ) + 
   
   # labels for easy orientation 
-  geom_label(aes(x = 20, y = 45, label='Temperature'), size = 5, angle = 60) + 
+  geom_label(aes(x = 20, y = 45, label='Temperature'), size = 5, angle = 60, fill = '#FFFFF0') + 
   geom_text(aes(x = 8, y = 20, label='warmer'), angle = 60) + 
   geom_text(aes(x = 36, y = 68, label='cooler'), angle = 60) + 
   
-  geom_label(aes(x = 80, y = 45, label='Precipitation'),  size = 5, angle = 300) + 
+  geom_label(aes(x = 80, y = 45, label='Precipitation'),  size = 5, angle = 300, fill = '#FFFFF0') + 
   geom_text(aes(x = 64, y = 68, label='more'), angle = 300) + 
   geom_text(aes(x = 92, y = 20, label='less'), angle = 300) +  
   
-  geom_label(aes(x = 50, y = -5, label='Geomorphology'), size = 5,) + 
+  geom_label(aes(x = 50, y = -5, label='Geomorphology'), size = 5, fill = '#FFFFF0') + 
   geom_text(aes(x = 23, y = -3, label='drier')) + 
   geom_text(aes(x = 78, y = -3, label='wetter')) + 
 
@@ -253,11 +256,26 @@ ggplot() +
   geom_sf(data = dri_lab_bg, fill = '#A40E4C', alpha = 0.4, color = '#A40E4C', lwd = 1.1) + 
   
   # text boxes explaining the groups
-  geom_text(aes(x = 17, y = 80, label = Wettest_label), size = 3) + 
-  geom_text(aes(x = 89, y = 67, label = Intermediate_label), size = 3) + 
-  geom_text(aes(x = -2, y = 40, label = Driest_label), size = 3) + 
+  geom_text(aes(x = 10, y = 80, label = Wettest_label), size = 3) + 
+  geom_text(aes(x = 90, y = 70, label = Intermediate_label), size = 3) + 
+  geom_text(aes(x = 10.25, y = 60, label = Driest_label), size = 3) + 
+  
+  labs(
+    title = 'Possible effects of climatic decoupling on STZ delineation', 
+    caption = 'Each ellipsoid represents clusters of morphotypes, an STZ group, from a canonical\n correspondence analysis of traits measured in a common garden(s).') + 
   
   theme_void() + 
-  xlim(-15, 115) + 
-  theme( legend.position = 'bottom') 
+  xlim(-10, 110) + 
+  theme(
+    legend.position = 'bottom', 
+    legend.box = "vertical",
+    plot.title = element_text(hjust = 0.5), 
+    plot.caption = element_text(hjust = 0.5)
+    ) +
+  guides(
+    shape = guide_legend(title = "Population:", nrow = 1, order = 1),
+    color = guide_legend(nrow = 1)
+  )
+
+
 
