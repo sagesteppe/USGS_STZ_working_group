@@ -70,3 +70,37 @@ rotate_sf <- function(data, x_add = 0, y_add = 0) {
         .$geometry * shear_matrix() * rotate_matrix(pi / 20) + c(x_add, y_add)
     )
 }
+
+border_segments <- function(x, y){
+  
+  tri_borders <- x |>
+    sf::st_cast('POINT') 
+  
+  pieces <- lwgeom::st_split(sf::st_cast(x, 'LINESTRING'), tri_borders)[[1]] 
+  
+  breakup <- function(y){
+    stplanr::line_segment1(l = y, n_segments = 50) |>
+      sf::st_as_sf() |>
+      dplyr::mutate(ID = 1:n())
+  }
+  pieces <- lapply(pieces, st_geometry)
+  broken <- lapply(pieces, breakup)
+  
+  broken[[2]] <- broken[[2]] |>
+    mutate(ID = abs(ID - 51))
+  
+  return(broken)
+  
+}
+
+
+bindr <- function(x, y){
+  
+  bind_rows(x, y) |>
+    select(ID, geometry) |>
+    group_by(ID) |>
+    summarize(geometry = st_union(geometry)) |>
+    st_cast('LINESTRING') |>
+    st_intersection( triangle, 'within')  %>% 
+    filter(st_is(., "LINESTRING"))
+}

@@ -1,6 +1,11 @@
 library(tidyverse)
 library(sf)
 library(stplanr)
+library(stars)
+library(terra)
+library(gstat)
+setwd('~/Documents/assoRted/USGS_STZ_working_group/scripts')
+source('functions.R')
 
 triangle <- st_as_sf(
   data.frame(
@@ -17,37 +22,8 @@ tri_borders <- triangle |>
 
 pieces <- lwgeom::st_split( st_cast(triangle, 'LINESTRING'), tri_borders)[[1]] 
 
-border_segments <- function(x, y){
-  
-  tri_borders <- x |>
-    sf::st_cast('POINT') 
-  
-  pieces <- lwgeom::st_split(sf::st_cast(x, 'LINESTRING'), tri_borders)[[1]] 
-
-  breakup <- function(y){
-    stplanr::line_segment1(l = y, n_segments = 50) |>
-    sf::st_as_sf() |>
-    dplyr::mutate(ID = 1:n())
-  }
-  pieces <- lapply(pieces, st_geometry)
-  broken <- lapply(pieces, breakup)
-
-}
-
-bindr <- function(x, y){
-  
-  bind_rows(x, y) |>
-    select(ID, geometry) |>
-    group_by(ID) |>
-    summarize(geometry = st_union(geometry)) |>
-    st_cast('LINESTRING') |>
-    st_intersection( triangle, 'within')  %>% 
-    filter(st_is(., "LINESTRING"))
-}
-
 ob <- border_segments(triangle) |>
   bind_rows()
-
 
 # h lines 
 start <- data.frame(
@@ -100,10 +76,64 @@ end <- data.frame(
 
 v135_lines <- bindr(start, end)
 
+rm(start, end)
+
+
+# create a grid for the background to color the evapo demand/availability
+pt_intrsct <- do.call(bind_rows,
+    list(
+      st_intersection(h_lines, v45_lines),
+      st_intersection(h_lines, v135_lines),
+      st_intersection(v45_lines, v135_lines)
+  )
+) |>
+  distinct()
+
+pt_intrsct <- mutate(pt_intrsct,
+       x = st_coordinates(pt_intrsct)[,1] * (1/2), 
+       y = st_coordinates(pt_intrsct)[,2]) |>
+  rowwise() |>
+  mutate(mesic = sum(x, y), .before = geometry) |>
+  select(mesic)
+
+grd <- st_bbox(triangle) |>
+  stars::st_as_stars(100) |>
+  st_crop(triangle) 
+int_bg <- gstat::idw(mesic~1, pt_intrsct, grd)
+int_bg <- terra::rast(int_bg)
+int_bg <- focal(int_bg, w = 21, fun = mean, na.rm = TRUE)
+names(int_bg) <- c('ID', 'other')
+
+int_bg <- mask(int_bg, vect(triangle))
+int_bg <- terra::as.data.frame(int_bg, xy = TRUE)
+
+rm(grd)
+
 ggplot() + 
-  geom_sf(data = h_lines) + 
-  geom_sf(data = v45_lines) + 
-  geom_sf(data = v135_lines) + 
-  geom_sf(data = ob, aes(color = factor(ID)))  +
+  geom_raster(data = int_bg, aes(x = x, y = y, fill = ID)) + 
+  scale_fill_distiller(palette = "RdBu", guide = "none", direction = 1) + 
+  # first we draw the triangle 
+  geom_sf(data = h_lines, color = 'grey80') + 
+  geom_sf(data = v45_lines, color = 'grey80') + 
+  geom_sf(data = v135_lines, color = 'grey80') + 
+  geom_sf(data = ob, aes(color = ID), lwd = 2) +
+  
+  scale_color_distiller(palette = "RdBu", guide = "none") + 
+  
+  # labels for easy orientation 
+  geom_label(aes(x = 20, y = 45, label='Temperature'), angle = 60) + 
+  geom_text(aes(x = 5, y = 15, label='warmer'), angle = 60) + 
+  geom_text(aes(x = 40, y = 75, label='cooler'), angle = 60) + 
+  
+  geom_label(aes(x = 80, y = 45, label='Precipitation'), angle = 300) + 
+  geom_text(aes(x = 60, y = 75, label='more'), angle = 300) + 
+  geom_text(aes(x = 95, y = 15, label='less'), angle = 300) +  
+  
+  geom_label(aes(x = 50, y = -5, label='Geomorphology')) + 
+  geom_text(aes(x = 15, y = -3, label='drier')) + 
+  geom_text(aes(x = 85, y = -3, label='wetter')) + 
+  
   theme(aspect.ratio = 1) + 
   theme_void()
+
+
