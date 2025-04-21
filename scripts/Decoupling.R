@@ -124,7 +124,7 @@ rm(h_lines, v45_lines, v135_lines)
 mesic_grp <- data.frame(
   Group = 'Mesic',
   Status = c(rep('Core', 8), 'Decoupled'),
-  x = c(sample(45:50, 8, replace = TRUE), 62), 
+  x = c(sample(44:51, 8, replace = TRUE), 62), 
   y = c(sample(63:70, 8), 58)
 ) |>
   st_as_sf(coords = c('x', 'y'))
@@ -132,8 +132,8 @@ mesic_grp <- data.frame(
 dry_grp <- data.frame(
   Group = 'Dry',
   Status = c(rep('Core', 8), 'Decoupled'),
-  x = c(sample(33:42, 8), 22), 
-  y = c(sample(18:28, 8), 25)
+  x = c(sample(37:46, 8), 22), 
+  y = c(sample(15:25, 8), 25)
   ) |>
   st_as_sf(coords = c('x', 'y'))
 
@@ -164,9 +164,9 @@ values = c("Dry" = "#A40E4C", "Med" = "#B5C2B7", "Mesic" = "#124E78")
 shapes = c('Core' = 21, 'Decoupled' = 23)
 labs <- c('Driest', 'Intermediate', 'Wettest')
 
-Wettest_label <- c("The wettest group's decoupled pop. has more\n soil moisture available; resulting in a\n lower range of precip and temp.")
+Wettest_label <- c("The wettest groups decoupled pop. has more\n soil moisture available; resulting in a\n lower range of precip and temp.")
 Intermediate_label <- c('The intermediate group has two decoupled\npops; increasing the predicted range of\ntemp and precip in both directions.')
-Driest_label <- c('The driest group has less\n soil moisture available\n and extends to areas\nwith higher precip')
+Driest_label <- c('The driest group has less\n soil moisture available\n and extends to areas\nwith higher precip.')
 
 wet_lab_bg <- data.frame(
   x = c(-14, 36, 30, -8, -14), 
@@ -178,7 +178,7 @@ wet_lab_bg <- data.frame(
   st_buffer(1)
 
 int_lab_bg <- data.frame(
-  x = c(66, 113, 108, 71, 66), 
+  x = c(66, 113, 108, 72, 66), 
   y = c(75,  75,  65, 65, 75)
 )|>
   st_as_sf(coords = c('x', 'y')) |>
@@ -196,14 +196,20 @@ dri_lab_bg <- data.frame(
   st_buffer(1)
 
 
-ggplot() + 
+bord <- st_buffer(triangle, -0.5) |>
+  sf::st_cast('MULTILINESTRING')
+
+p <- ggplot() + 
   
   # first draw the raster background, everything else will be superimposed on top 
   # of it
   geom_raster(data = int_bg, aes(x = x, y = y, fill = ID)) + 
   scale_fill_distiller(palette = "RdBu", guide = "none", direction = 1) + 
   new_scale_fill() +
-
+  
+  # and add this to remove the values from going straight up against the borders
+  geom_sf(data = bord, color = '#FFFFF0')+
+  
   # now we add the grid lines across it, in the style of a USDA soil triangle
   geom_sf(data = lines, color = '#FFFFF0') + 
   
@@ -235,8 +241,8 @@ ggplot() +
     values = values, 
     labels = labs,
     name = 'STZ Group'
-    ) + 
-  
+    ) +
+
   # labels for easy orientation 
   geom_label(aes(x = 20, y = 45, label='Temperature'), size = 5, angle = 60, fill = '#FFFFF0') + 
   geom_text(aes(x = 8, y = 20, label='warmer'), angle = 60) + 
@@ -259,7 +265,7 @@ ggplot() +
   geom_text(aes(x = 10, y = 80, label = Wettest_label), size = 3) + 
   geom_text(aes(x = 90, y = 70, label = Intermediate_label), size = 3) + 
   geom_text(aes(x = 10.25, y = 60, label = Driest_label), size = 3) + 
-  
+
   labs(
     title = 'Possible effects of climatic decoupling on STZ delineation', 
     caption = 'Each ellipsoid represents clusters of morphotypes, an STZ group, from a canonical\n correspondence analysis of traits measured in a common garden(s).') + 
@@ -275,7 +281,6 @@ ggplot() +
   guides(
     shape = guide_legend(title = "Population:", nrow = 1, order = 1),
     color = guide_legend(nrow = 1)
-  )
+  ) 
 
-
-
+ggsave( '../figures/decoupling.png', p, height = 2250, width = 2250, units = 'px')
