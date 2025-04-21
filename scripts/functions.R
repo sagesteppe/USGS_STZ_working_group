@@ -104,3 +104,20 @@ bindr <- function(x, y){
     st_intersection( triangle, 'within')  %>% 
     filter(st_is(., "LINESTRING"))
 }
+
+ellipse_drw <- function(x){
+  
+  total <- st_convex_hull(st_union(x)) |>
+    st_buffer(2)
+  core <- st_convex_hull(st_union(filter(x, Status =='Core'))) |>
+    st_buffer(2) |>
+    st_as_sf() 
+  diff <- st_difference(total, core) |>
+    st_as_sf() |>
+    mutate(Area = 'Peripheral')
+  return(
+    list(
+      total = total, core = core, diff = diff
+    )
+  )
+}
