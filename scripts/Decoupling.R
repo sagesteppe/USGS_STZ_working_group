@@ -169,7 +169,7 @@ Intermediate_label <- c('The intermediate group has two decoupled\npops; increas
 Driest_label <- c('The driest group has less\n soil moisture available\n and extends to areas\nwith higher precip.')
 
 wet_lab_bg <- data.frame(
-  x = c(-14, 36, 30, -8, -14), 
+  x = c(-16, 38, 32, -10, -16), 
   y = c(85, 85, 75, 75, 85)
 ) |>
   st_as_sf(coords = c('x', 'y')) |>
@@ -178,7 +178,7 @@ wet_lab_bg <- data.frame(
   st_buffer(1)
 
 int_lab_bg <- data.frame(
-  x = c(66, 113, 108, 72, 66), 
+  x = c(64, 115, 110, 70, 64), 
   y = c(75,  75,  65, 65, 75)
 )|>
   st_as_sf(coords = c('x', 'y')) |>
@@ -187,7 +187,7 @@ int_lab_bg <- data.frame(
   st_buffer(1)
 
 dri_lab_bg <- data.frame(
-  x = c(-4.5, 25, 17.5, 3.5, -4.5), 
+  x = c(-6.5, 27, 19.5, 1.5, -6.5), 
   y = c(66, 66, 53, 53, 66)
 )|>
   st_as_sf(coords = c('x', 'y')) |>
@@ -271,7 +271,7 @@ p <- ggplot() +
     caption = 'Each ellipsoid represents clusters of morphotypes, an STZ group, from a canonical\n correspondence analysis of traits measured in a common garden(s).') + 
   
   theme_void() + 
-  xlim(-10, 110) + 
+  xlim(-15, 115) + 
   theme(
     legend.position = 'bottom', 
     legend.box = "vertical",
