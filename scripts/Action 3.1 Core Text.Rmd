@@ -1,0 +1,20 @@
+---
+title: "Action 3.1 Core Text"
+author: "Reed Benkendorf"
+date: "2025-04-22"
+output: pdf_document
+---
+
+Plant responses to climate and extreme weather are mediated through interactions among landforms, soils, and hydrologic processes across spatial scales (Giaccone et al. 2019, Moeslund et al 2013, Swanson et al. 1988). 
+Landforms directly influence microclimates via mechanisms such as cold-air pooling and rain shadows, and they regulate solar exposure through slope and aspect, all of which shape localized gradients in soil moisture and temperature (Dearborn and Danby 2017, Pastore et al. 2022, Minder et al. 2008). 
+These geomorphic features also influence water redistribution, creating persistent zones of higher or lower soil moisture (McAuliffe 1994, Wondzell et al. 1996, Qiu et al. 2001).
+Soil moisture availability is further moderated by soil texture, structure, and chemistry, with properties like coarse fragments, clay content, and organic carbon playing key roles (Duniway et al. 2010, English et al. 2005, Fernandez-Illescas et al. 2001, Katra et al. 2008,  Rawls et al. 2003, Singh et al. 1998.)
+Because of these fine-scale variations, climate-based models often fail to capture the environmental conditions experienced by plant populations, leading to a mismatch—or decoupling—between predicted climatic suitability and actual site conditions (Ackerly et al. 2020, Potter et al. 2013, Lenoir et al. 2016).
+This can affect both the design of common garden experiments and the modeling of seed transfer zones (STZs), particularly in cases where populations are adapted to topographically mediated microhabitats that climate data alone do not reflect.
+
+While high-resolution downscaled climate data (e.g., ClimateNA) have improved localized climate modeling, they still fail to account for soil-level water availability, which is more directly influenced by landform and soil attributes.
+Advances in remote sensing and GIS now allow for the integration of landform metrics (e.g., slope, aspect, wetness indices) and moderate-resolution soil data, although soil datasets often lag behind in spatial accuracy (Amatulli et al. 2020, Hengl et al. 2017, Vergopolan et al. 2021). 
+These additional variables can enhance model performance but may also generate impractically fine-grained or fragmented STZs that require post-processing (Gibson et al. 2019). 
+Importantly, most species show limited evidence of adaptation to broad soil classes, suggesting that restoration models should prioritize continuous variables tied to soil moisture dynamics over discrete soil types (Davidson & Germino 2020, Macel et al. 2007, Ellis & Ågren 2024, Rupprecht et al. 2021).
+Ecological site descriptions (ESDs) and newer geospatially-derived ecological site groups (ESGs) offer a potential framework for integrating geomorphology and vegetation context into restoration planning (Moseley et al. 2010, Nauman et al. 2022). 
+However, due to their limited availability, practitioners may need to rely on combining multiple datasets and expert knowledge—an approach that, without clear guidance, can introduce complexity into seed source selection decisions.
