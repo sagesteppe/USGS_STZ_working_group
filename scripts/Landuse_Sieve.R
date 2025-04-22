@@ -59,8 +59,8 @@ r_plot <- ggplot() +
   theme(
     legend.position="bottom", 
     plot.title = element_text(hjust = 0.5)) + 
-  labs(title = 'Land use `Sieve`') + 
-  annotate("text", x = 18, y = -1.5, size=5, color="gray15", label = "Suitable Areas") +
+  labs(title = 'Land use `Filter`') + 
+  annotate("text", x = 18, y = -1.5, size=5, color="gray15", label = "Suitable Area") +
 
   annotate("text", x = 18, y = 5, size = 3.75, color="gray15", # lowest sieve
            label = "Historic Seeding") + 
@@ -70,7 +70,7 @@ r_plot <- ggplot() +
            label = "Land Cover") 
   
 r_plot
-ggsave('../figures/EnvironmentalSieve.png', r_plot, bg = 'transparent', 
+ggsave('../figures/EnvironmentalFilter.png', r_plot, bg = 'transparent', 
        dpi = 300, units = 'in', height = 5, width = 3.5)
 
 
