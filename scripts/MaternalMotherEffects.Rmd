@@ -1,0 +1,6 @@
+
+# Maternal mother effects stuff
+
+An additional influence of soil conditions at the wildland seed collection site in common garden studies may be environmental maternal effects, which have been experimentally demonstrated to be related to abiotic soil conditions and drought stress (Bischoff & Müller-Schärer 2010, Vivas et al. 2020). 
+Maternal plant phenotypes influence the seed mass of their progeny, which influences germination and the growth of young plants in a range of species, but appear most pronounced on progeny in low-nutrient or stressful environments (Bischoff & Müller-Schärer 2010, Schmid & Dolt 1994).
+Beyond the direct maternal effect of seed mass, environmental maternal effects - a form of transgenerational phenotypic plasticity– have also been shown to influence the early stages of plant growth for some species investigated (Galloway 2005, Galloway & Etterson 2007, Vivas et al. 2020), but not others (Monty et al. 2009), *Section 2.4*. 
