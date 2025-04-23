@@ -1,12 +1,16 @@
 ---
-title: "Select Seed Lots under Climate Change Scenarios"
+title: "Seed lot selection under climate change"
 author: "Reed Benkendorf, Rob Massatti & Daniel Shyrock"
-output: pdf_document
+output: 
+  word_document:
+  pdf_document:
+    latex_engine: xelatex
 header-includes:
   - \usepackage{setspace}
   - \setlength{\headsep}{0cm}
   - \usepackage{titling}
   - \setlength{\droptitle}{-6em}
+bibliography: ../citations/citations.bib
 ---
 \doublespacing
 \vspace{-15truemm}
@@ -88,7 +92,7 @@ filt <- ggplot() +
 
 ```
 
-```{r Create plots, fig.cap = 'A general workflow for forecasting seed zones into future climate scenarios. The panels at left show the results for creating seed zones in space, clipping them to a species range, and then applying various filters to select priority areas for seed collection based on anticipated restoration needs. The process is repeated using climate forecasts in the panels at right. See `filter` figure to understand examples of data sets which may be used to filter data sets.'}
+```{r Create plots, eval = F}
 
 cols <- c("Western" = '#1b9e77', "East" = '#d95f02', "Northern" = '#7570b3', "Central" = '#e7298a')
 
@@ -127,13 +131,17 @@ rl_enm <- wrap_elements(panel = textGrob('Ecological\nNiche Model', rot=90))
 rl_filt <- wrap_elements(panel = textGrob('Filter', rot=90))
 rl_eval <- wrap_elements(panel = textGrob('Evaluate', rot=90))
 
-(rl_sz | sz_c | sz_f) / 
-  (rl_enm | enm_c| enm_f) +
-    (rl_filt | filt | filt) + 
-    #  (rl_eval | p ) +
-          plot_layout(widths = c(0.1,10,10), guides='collect')
-
-
+rl_sz + sz_c + sz_f + rl_enm + enm_c + enm_f + rl_filt + filt + filt + 
+  plot_layout(
+    widths = c(1, 3, 3),
+    guides = "collect",
+    design = "
+    123
+    456
+    789
+    ")
+  
+ggsave("../figures/ClimateChangeConcept.png")
 ```
 
 ```{r Evaluation Table, eval = F}
@@ -186,28 +194,28 @@ gtsave(table, '../figures/EvaluationTable.png', path = NULL)
 
 ## Seed Zones
 
-When using a common garden approach and fitting regression models to morphotypes derived from a CCA analysis, care should be taken to avoid overfitting. Overfitted models reduce the ability to generalize across environmental and geographic feature space. 
-This consideration is especially important when developing seed zones under future climate scenarios, as opportunities to update these models in an iterative or adaptive framework may be limited. 
+When using a common garden approach and fitting regression models to morphotypes derived from a canonical correspondence analysis, care should be taken to avoid overfitting.
+Overfitted models reduce the ability to generalize across environmental and geographic feature space [@wenger2012assessing; @yates2023cross]. 
+This consideration is especially important when developing seed zones under future climate scenarios, as opportunities to update these models in an iterative or adaptive framework may be limited, although using space-for-time substitution approaches may be possible [@lovell2023space]. 
 If seed transfer zones are delineated using landscape genetic data, ecological niche models (ENMs) can be fit to populations within each zone and projected under future climate scenarios to guide seed sourcing and deployment.
+
+![A general workflow for forecasting seed zones under future climate scenarios. The left panels illustrate the process of delineating seed zones, constraining them to a species' current range, and applying environmental filters to identify priority areas for seed collection based on anticipated restoration needs. The workflow is repeated using climate forecast data, as shown in the right panels. See the ‘Filter’ figure for examples of datasets commonly used to apply environmental filters.](../figures/ClimateChangeConcept.png){width=50%}  
 
 ## Ecological Niche Model
 
-Ecological niche modeling involves using species occurrence data and environmental predictors to statistically estimate a species’ potential distribution (Elith & Leathwick, 2010).
+Ecological niche modeling involves using species occurrence data and environmental predictors to statistically estimate a species’ potential distribution (Elith & Leathwick, 2009).
 ENMs can be developed using occurrence data from sources such as BISON or GBIF and projected onto current or future climate surfaces (see *Forecasting Seed Zones with Climate Models*). 
-These projections carry several assumptions and uncertainties (Dormann, 2007; Araújo et al., 2005).
+However these model projections have multiple assumptions and uncertainties which should be understood before their usage (Dormann, 2007; Araújo et al. 2005).
 
-By thresholding probability surfaces, binary masks can be created to limit seed zones to areas likely to support a species (Liu et al., 2005), resulting in more accurate estimates of realized seed zone extent under both current and future conditions.
+By thresholding probability surfaces, binary masks can be created to limit seed zones to areas likely to support a species (Liu et al. 2005), resulting in estimates can maximize an objective for the extent of seed zones under both current and future conditions.
 While current-condition models are often naturally limited to sampled areas (e.g., common garden sites; Johnson et al., 2017), modifying future zone extents may require mechanistic modeling or additional post-processing (Urban et al., 2016).
 
 ## Filter ('Sieve') Areas
 
 Not all areas within a seed zone may be suitable for seed collection or restoration. 
 For example, some landscapes may have transitioned to annual grassland states, limiting both seed viability and restoration potential. 
-In many cases, projected suitable habitat may be inaccessible to natural seed dispersal, leaving these areas as long-term sinks unless seed collection from previously seeded populations becomes an accepted practice.
-
-In the conceptual figure below, we depict how filters can help determine seed need per zone.
-
-Environmental filters can be implemented by masking raster layers into binary surfaces (1 = included, 0 = excluded), effectively guiding the inclusion of pixels in downstream analyses.
+In many cases, projected suitable habitat may be inaccessible to natural seed dispersal (assisted climate migration), leaving these areas as long-term sinks unless seed collection from previously seeded populations becomes an accepted practice.
+However, environmental filters can be implemented by masking raster layers into binary surfaces (1 = included, 0 = excluded), effectively guiding the inclusion of pixels in downstream analyses. 
 
 **National Land Cover Dataset (NLCD)** Provides land cover classifications and can be used to exclude areas converted to annual grasslands. Updated annually in the conterminous U.S.
 
@@ -215,23 +223,25 @@ Environmental filters can be implemented by masking raster layers into binary su
 
 **Historic Seeding** Can be used to avoid seed collection from historically seeded areas. These data are updated sporadically.
 
-![Conceptual figure indicating the use of filters to 'sieve' areas for priority germplasm development.](../figures/EnvironmentalFilter.png){width=25%}  
+![Conceptual illustration of environmental filtering used to identify priority areas for germplasm development. Filters are applied to exclude unsuitable areas based on ecological or land use criteria, effectively sieving the landscape to support targeted seed collection and restoration planning.](../figures/EnvironmentalFilter.png){width=25%}  
 
 ## Forecasting seed zones with climate models 
 
-A variety of gridded climate datasets exist for both current conditions and future projections based on Representative Concentration Pathways (RCPs) or Shared Socioeconomic Pathways (SSPs) (Noce et al., 2020). 
-High-resolution datasets such as WorldClim 2.0, CHELSA, and ClimateNA offer downscaled bioclimatic variables across historical and future time periods (Fick & Hijmans, 2017; Brun et al., 2022; Mahony et al., 2022; Wang et al., 2016).
-Notably, ClimateNA (∼30 m resolution) is used in tools like the Climate-Smart and Seedlot Selection Tool, making it particularly relevant for site-specific restoration planning (St. Clair et al., 2022). 
+A variety of gridded climate datasets exist for both current conditions and future projections based on Representative Concentration Pathways (RCPs) or Shared Socioeconomic Pathways (SSPs) [@noce2020new]. 
+High-resolution datasets such as WorldClim 2.0, CHELSA, and ClimateNA offer downscaled bioclimatic variables across historical and future time periods [@fick2017worldclim; @brun2022global; @mahony2022global].
+Notably, ClimateNA (∼30 m resolution) is used in tools like the Climate-Smart and Seedlot Selection Tool, making it particularly relevant for site-specific restoration planning [@st2022seedlot]. 
 
 Seed zones can be modeled under both current and forecasted conditions. 
-When modellers are uncertain about which climate projections to rely on, a single statistical model can be applied across multiple climate forecasts and the predictions ensembled to estimate both consensus predictions and uncertainty (Dormann et al., 2018).
+When modellers are uncertain about which climate projections to rely on, a single statistical model can be applied across multiple climate forecasts and the predictions ensembled to estimate both consensus predictions and uncertainty [@dormann2018model].
 
 ## Preventing model extrapolation  
 
-Projecting ecological niche models into future climate scenarios can lead to extrapolation into environmental conditions not represented in the training data. This can degrade model performance, especially in sparsely sampled feature spaces (Elith et al., 2010; Owens et al., 2013).
-Several methods have been developed to detect spatial extrapolation and identify regions of low model reliability. 
-These tools map regions in geographic space where model performance may be unreliable relative to global performance metrics (e.g., RMSE, MAE, AUC-PR). In such areas, models should be interpreted cautiously (Conn et al., 2015; de Bruin et al., 2022; Velazco et al., 2023; Wang et al., 2023). 
-These extrapolation-detection tools are now considered best practice in ENM modeling, particularly for machine learning–based approaches, determing whether these approaches can be incorporated into genecological studies is warranted. 
+Projecting ecological niche models into future climate scenarios can lead to extrapolation into environmental conditions not represented in the training data. 
+This can degrade model performance, especially in sparsely sampled feature spaces [@elith2010art]; @owens2013constraints].
+Several methods, largely relying on cross validation, have been developed to detect spatial extrapolation and identify regions of low model reliability [@roberts2017cross]. 
+These tools map regions in geographic space where model performance may be unreliable relative to global performance metrics (e.g., RMSE, MAE, AUC-PR). 
+In such areas, models should be interpreted cautiously (@de2022dealing; @wang2023spatial). 
+These extrapolation-detection tools are now considered best practice in ENM modeling, particularly for machine learning–based approaches, determining whether these approaches can be incorporated into genecological studies is warranted. 
 
 ## Metrics for targeting native plant materials development 
 
@@ -240,5 +250,11 @@ Several metrics can help prioritize native seed development projects, including:
 - Total Area of Seed Zones: Useful for estimating potential seed demand.
 - Resilience Metrics: Summary statistics (mean, median) for resilience indicators within each zone.
 - Change in Zone Size: Degree of expansion or contraction between current and forecast zones.
-- Geographic and Environmental Proximity: Target collection from areas that minimize geographic distance or maximize environmental similarity between current and future zone boundaries.
-![Metrics which can be used to relate the need for germplasm development under both current and forecast climate scenarios.](../figures/EvaluationTable.png){width=75%}  
+
+What is important is that the extent of seed zones are considered in context, such as public land management, the expectations for natural re-vegetation of areas within a zone, and the change in area between current and climate change projections. 
+Several participants in our workshop mentioned that it take many (3-10) to get a seed source reliably into production. 
+Accordingly materials desired for 2040, should be field collected within the next decade. 
+
+![Key metrics for evaluating germplasm development needs under both current and forecast climate scenarios. These metrics support prioritization of seed collection and development efforts by quantifying spatial, ecological, and resilience-based factors within and across seed zones.](../figures/EvaluationTable.png){width=75%}  
+
+# Works Cited
