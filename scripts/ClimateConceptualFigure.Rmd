@@ -257,4 +257,6 @@ Accordingly materials desired for 2040, should be field collected within the nex
 
 ![Key metrics for evaluating germplasm development needs under both current and forecast climate scenarios. These metrics support prioritization of seed collection and development efforts by quantifying spatial, ecological, and resilience-based factors within and across seed zones.](../figures/EvaluationTable.png){width=75%}  
 
+\singlespacing
+
 # Works Cited
