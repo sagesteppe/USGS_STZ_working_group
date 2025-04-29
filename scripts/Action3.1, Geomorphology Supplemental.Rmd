@@ -3,6 +3,7 @@ title: "Action 3.1, Geomorphology, Supplemental"
 output: 
   pdf_document:
     latex_engine: xelatex
+  word_document: default
 header-includes:
   - \usepackage{setspace}
   - \setlength{\headsep}{0cm}
@@ -55,5 +56,6 @@ For immediate use, practitioners may be able to combine data sets which classify
 Finally, combining multiple data sets, e.g. climate similarity and geomorphology, may result in more rather than less confusion when selecting plant materials without a clearly defined workflow for decision making. 
 
 \singlespacing
+\newpage
 
 ## Works Cited
